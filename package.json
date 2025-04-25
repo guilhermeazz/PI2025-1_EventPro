@@ -22,11 +22,13 @@
   },
   "homepage": "https://github.com/guilhermeazz/PI_EventPro_2025-1#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "mongoose": "^8.13.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.1",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^22.14.1",
