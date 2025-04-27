@@ -127,13 +127,6 @@ const eventSchema = new Schema<IEvent>(
                 nivel: { type: String, enum: ['admin', 'reception', 'speaker'], required: true },
             },
         ],
-        reviews: [
-            {
-                userId: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
-                rating: { type: Number, required: true },
-                comment: { type: String, required: true },
-            },
-        ],
     }
 );
 
