@@ -3,19 +3,19 @@ import UserModel from '../models/UserModel';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-export const register = async (req : Request, res: Response) => {
-    const { email, password} = req.body;
+export const register = async (req : Request, res: Response) : Promise <any> => {
+    const user = new UserModel(req.body)
 
+    //Verifica se o usuário já existe no DB
     try {
         const existingUser = await UserModel.findOne({
-            email
+            email: user.email
         });
         if (existingUser) {
             return res.status(400).json({ message : 'Usuário já cadastrado'});
         }
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = await bcrypt.hash(user.password, 10);
             const newUser = new UserModel({
-                email,
                 password: hashedPassword
             });
 
@@ -26,7 +26,9 @@ export const register = async (req : Request, res: Response) => {
     }
 };
 
-export const login =  async (req: Request, res: Response) => {
+
+// Função para fazer Login
+export const login =  async (req: Request, res: Response) : Promise<any> => {
     const { email, password} = req.body;
 
     try {
@@ -37,10 +39,30 @@ export const login =  async (req: Request, res: Response) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) return res.status(401).json({ message: 'Senha inválida'});
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
-            expiresIn: '1h' 
+        //Gerar o token JWT
+        // O token é gerado com o id do usuário e uma chave secreta, e tem um tempo de expiração de 30 dias.
+        const token = jwt.sign({ email: user.email, password: user.password }, process.env.JWT_SECRET as string, {
+            expiresIn: '30d',
+            subject: user.id,
         });
-        return res.status(200).json({ message: 'Login realizado com sucesso', token });
+        // O token é enviado na resposta, junto com uma mensagem de sucesso e os dados do usuário.
+        // O token é enviado no formato Bearer, que é o padrão para autenticação com JWT.
+        return (
+            res.status(200).json({
+                message: 'Login realizado com sucesso!',
+                token,
+                user: {
+                    id: user?._id,
+                    email: user?.email,
+                    name: user?.name,
+                    lastname: user?.lastname,
+                    eventsInscriptions: user?.eventsInscriptions,
+                    eventsParticipations: user?.eventsParticipations,
+                    tickets: user?.tickets,
+                    token : token,
+                },
+            })
+        );
 
     }   catch (error) {
         return res.status(500).json({ message: 'Erro ao fazer login', error });
