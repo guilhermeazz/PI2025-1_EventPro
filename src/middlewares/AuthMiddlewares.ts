@@ -1,22 +1,28 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken"; 
+import { NextFunction, Request, Response } from "express";
+import { verify } from "jsonwebtoken";
 
 interface JWTPayload {
-    id: string;
+    sub: string;
 }
 
-export const authMiddleware = (req: Request, res: Response, next: () => void) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const token = req.headers.authorization?.split(" ")[1]; 
     
     if (!token) {
-        return res.status(401).json({ message: "Token não fornecido" });
+        res.status(401).end();
+        return;
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JWTPayload;
-        req.body.userId = decoded.id; 
-        next();
+        const { sub } = verify(
+            token,
+            process.env.JWT_SECRET as string,
+        ) as JWTPayload;
+
+        req.user_id = sub;
+
+        return next();
     } catch (error) {
-        return res.status(401).json({ message: "Token inválido" });
+        res.status(401).end();
     }
 };

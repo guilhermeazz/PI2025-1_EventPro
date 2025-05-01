@@ -1,6 +1,8 @@
 import Router from 'express';
 
 import { register, login } from '../controllers/AuthController';
+import { getUserDetails } from '../controllers/UserController';
+import { authMiddleware } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
 
@@ -68,3 +70,17 @@ router.post('/auth/register', register);
  *         description: Credenciais inválidas.
  */
 router.post('/auth/login', login);
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Obtém os detalhes do usuário autenticado
+ *     description: Endpoint para obter os detalhes do usuário autenticado no sistema.
+ *     responses:
+ *       200:
+ *         description: Detalhes do usuário obtidos com sucesso.
+ *       401:
+ *         description: Usuário não autenticado.
+ */
+router.get('/me', authMiddleware, getUserDetails);
