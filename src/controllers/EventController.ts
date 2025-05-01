@@ -1,12 +1,26 @@
 import { Request, Response } from 'express';
 import  EventModel  from '../models/EventModel';
+import QRCode from 'qrcode'; // Importa a biblioteca qrcode
 
 //CRUD de eventos
 //Criar novo evento
 export const createEvent = async (req: Request, res: Response) => {
     try {
-        const event = new EventModel(req.body);
-        await event.save();
+        const data = req.body;
+
+    // Cria instância do evento mas ainda não salva
+    const event = new EventModel(data);
+
+    // Gera o QR Code apenas se for tipo 'flash'
+    if (event.type === 'flash') {
+      const qrData = `eventapp://entry?id=${event._id}`;
+      const qrCodeBase64 = await QRCode.toDataURL(qrData);
+      event.entryQrCode = qrCodeBase64;
+      await event.save();
+    }else {
+            event.entryQrCode = '';
+    }
+        
         res.status(201).json(event);
     } catch (error) {
         res.status(500).json({ message: 'Error creating event', error });
@@ -130,6 +144,30 @@ export const updateOrganizer = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error updating organizer', error });
     }
 }
+
+// GET /validate-qr/:id
+export const validateQrCode = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const event = await EventModel.findById(id);
+
+    if (!event) {
+      return res.status(404).json({ valid: false, reason: 'Evento não encontrado' });
+    }
+
+    if (event.type !== 'flash') {
+      return res.status(400).json({ valid: false, reason: 'Evento não usa QR Code de entrada' });
+    }
+
+    // Aqui você pode adicionar mais validações se quiser
+
+    res.json({ valid: true, event });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ valid: false, reason: 'Erro interno' });
+  }
+};
 
 
 

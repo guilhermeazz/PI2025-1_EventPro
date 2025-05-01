@@ -4,6 +4,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import connectDB from './db/moongose';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes'; // Importa suas rotas
+import authRoutes from './routes/authRoutes'; // Importa as rotas de autenticação
 
 dotenv.config(); 
 
@@ -38,8 +39,11 @@ const createServer = (): Application => {
   // Configurando o Swagger
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-  // Adicionando rotas
+  // Adicionando rotas de usuário
   app.use('/api', userRoutes);
+
+  // Rota de autenticacao
+  app.use('/api/auth', authRoutes); 
 
   return app;
 };

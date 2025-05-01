@@ -63,3 +63,17 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
         res.status(400).json({ message: 'Erro ao deletar usuário', error: error.message });
     }
 };
+
+// Detalhes do usuário
+export const getUserDetails = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const user = await UserModel.findById(req.user_id); // Supondo que o ID do usuário esteja no token JWT
+        if (!user) {
+            res.status(404).json({ message: 'Usuário não encontrado' });
+            return;
+        }
+        res.status(200).json(user);
+    } catch (error: any) {
+        res.status(400).json({ message: 'Erro ao buscar detalhes do usuário', error: error.message });
+    }
+}
