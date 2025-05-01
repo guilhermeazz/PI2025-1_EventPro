@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import UserModel from '../models/UserModel';
+import { cp } from 'fs';
 
 // Criar novo usuário
 export const createUser = async (req: Request, res: Response): Promise<void> => {
@@ -67,12 +68,21 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 // Detalhes do usuário
 export const getUserDetails = async (req: Request, res: Response): Promise<void> => {
     try {
-        const user = await UserModel.findById(req.user_id); // Supondo que o ID do usuário esteja no token JWT
+        const user = await UserModel.findById(req.user_id)// Supondo que o ID do usuário esteja no token JWT
         if (!user) {
             res.status(404).json({ message: 'Usuário não encontrado' });
             return;
         }
-        res.status(200).json(user);
+        res.status(200).json({
+            name : user.name, 
+            lastname : user.lastname, 
+            email: user.email,
+            dateOfBirth: user.dateOfBirth, 
+            cpf: user.cpf,
+            phone: user.phone,
+            eventsInscriptions: user.eventsInscriptions,
+            eventsParticipations: user.eventsParticipations,
+        });
     } catch (error: any) {
         res.status(400).json({ message: 'Erro ao buscar detalhes do usuário', error: error.message });
     }

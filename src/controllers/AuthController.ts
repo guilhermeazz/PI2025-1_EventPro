@@ -50,7 +50,6 @@ export const login =  async (req: Request, res: Response) : Promise<any> => {
         return (
             res.status(200).json({
                 message: 'Login realizado com sucesso!',
-                token,
                 user: {
                     id: user?._id,
                     email: user?.email,
