@@ -47,7 +47,7 @@ const router = Router();
  *       400:
  *         description: Usuário já cadastrado ou dados inválidos fornecidos.
  */
-router.post('/auth/register', register);
+router.post('/register', register);
 
 /**
  * @swagger
@@ -69,7 +69,7 @@ router.post('/auth/register', register);
  *       401:
  *         description: Credenciais inválidas.
  */
-router.post('/auth/login', login);
+router.post('/login', login);
 
 /**
  * @swagger
@@ -84,3 +84,5 @@ router.post('/auth/login', login);
  *         description: Usuário não autenticado.
  */
 router.get('/me', authMiddleware, getUserDetails);
+
+export default router;
