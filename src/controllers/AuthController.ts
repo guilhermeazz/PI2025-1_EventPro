@@ -3,29 +3,6 @@ import UserModel from '../models/UserModel';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-export const register = async (req : Request, res: Response) : Promise <any> => {
-    const user = new UserModel(req.body)
-
-    //Verifica se o usuário já existe no DB
-    try {
-        const existingUser = await UserModel.findOne({
-            email: user.email
-        });
-        if (existingUser) {
-            return res.status(400).json({ message : 'Usuário já cadastrado'});
-        }
-            const hashedPassword = await bcrypt.hash(user.password, 10);
-            const newUser = new UserModel({
-                password: hashedPassword
-            });
-
-            await newUser.save();
-            return res.status(201).json({ message: 'Usuário cadastrado com sucesso!'});
-    } catch (error) {
-        res.status(500).json({ message: 'Erro ao cadastrar usuário', error });
-    }
-};
-
 
 // Função para fazer Login
 export const login =  async (req: Request, res: Response) : Promise<any> => {
