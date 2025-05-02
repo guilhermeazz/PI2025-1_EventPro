@@ -5,6 +5,12 @@ import connectDB from './db/moongose';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes'; // Importa suas rotas
 import authRoutes from './routes/authRoutes'; // Importa as rotas de autenticação
+import eventRoutes from './routes/eventRoutes'; // Importa as rotas de eventos
+import organizerRoutes from './routes/organizerRoutes'; // Importa as rotas de organizador
+import faqRoutes from './routes/faqRoutes'; // Importa as rotas de FAQ
+import participationRoutes from './routes/participationRoutes'; // Importa o modelo de participação
+import inscriptionRoutes from './routes/inscriptionRoutes';
+
 
 dotenv.config(); 
 
@@ -44,6 +50,18 @@ const createServer = (): Application => {
 
   // Rota de autenticacao
   app.use('/api/auth', authRoutes); 
+
+  // Rota de eventos
+  app.use('/api', eventRoutes, organizerRoutes);
+
+  // Rota de faqs
+  app.use('/api/faq', faqRoutes);
+
+  // Rota de participações
+  app.use('/api/participation', participationRoutes);
+
+  // Rota de inscrições
+  app.use('/api/inscription', inscriptionRoutes);
 
   return app;
 };

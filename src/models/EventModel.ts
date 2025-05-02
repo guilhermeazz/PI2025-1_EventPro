@@ -1,7 +1,7 @@
-import mongoose, { Schema, model, Document } from 'mongoose';    
+import mongoose, { Schema, model, Document } from 'mongoose';
 
 export interface IEvent extends Document {
-    userId: mongoose.Types.ObjectId;
+    userId: mongoose.Schema.Types.ObjectId; // Change this to `mongoose.Schema.Types.ObjectId`
 
     name: string;
     description: string;
@@ -20,117 +20,119 @@ export interface IEvent extends Document {
         current: number;
         total: number;
     };
-    shcedules: {
+    schedules: {
         start: Date;
         end: Date;
     };
 
-    type: string | 'standart' | 'class' | 'flash' ;
+    type: string | 'standart' | 'class' | 'flash';
 
     inscription: {
         price: number;
         type: string | 'full' | 'half' | 'free' | 'promotional' | 'vip' | 'other';
-        discont: number;
+        discount: number;
     }[];
-    certificates: boolean; // Como o certificado não será necessariamente gerado em todos os eventos, poderá se escolher se o evento terá ou não certificado
+    certificates: boolean;
     certificateTemplate: {
         templateName: string;
         courseName: string;
         courseDescription: string;
     };
     contents: {
-        title: string // Devido à falta de infraestrutura para armazenamento de arquivos, o sistema ainda não contemplará esta funcionalidade
+        title: string;
     }[];
 
-    entryQrCode: string; // O QrCode de entrada será gerado apenas em eventos flash, onde o participante não precisa se inscrever.
+    entryQrCode: string;
 
     organizers: {
-        userId: mongoose.Types.ObjectId;
-        nivel: string | 'admin' | 'reception' | 'speaker' ;
+        userId: mongoose.Schema.Types.ObjectId; // Change this to `mongoose.Schema.Types.ObjectId`
+        nivel: string | 'admin' | 'reception' | 'speaker';
     }[];
 
     reviews: {
-        userId: mongoose.Types.ObjectId;
-        rating: number; // De 0 a 5
+        userId: mongoose.Schema.Types.ObjectId; // Change this to `mongoose.Schema.Types.ObjectId`
+        rating: number;
         comment: string;
     }[];
-
 }
 
-const eventSchema = new Schema<IEvent>(
-    {
-        name: { type: String, required: true },
-        description: { type: String, required: true },
-        categories: { type: [String], required: true },
-        date: { type: Date, required: true },
-        location: {
-            address: { type: String, required: true },
-            city: { type: String, required: true },
-            state: { type: String, required: true },
-            country: { type: String, required: true },
-            additionalInfo: { type: String, required: false },
-        },
-        capacity: {
-            max: { type: Number, required: true },
-            current: { type: Number, required: true },
-            total: { type: Number, required: true },
-        },
-        shcedules: {
-            start: { type: Date, required: true },
-            end: { type: Date, required: true },
-        },
-        type: { type: String, enum: ['standart', 'class', 'flash'], required: true },
-        inscription: {
-            type: [
-                {
-                    price: { type: Number, required: true },
-                    type: { type: String, enum: ['full', 'half', 'free', 'promotional', 'vip', 'other'], required: true },
-                    discont: { type: Number, required: true },
-                },
-            ],
-            // Inscriptions são necessárias apenas se o tipo do evento não for flash
-            required: function () {
-                return this.type !== 'flash';
-            },
-        },
-        certificates: { type: Boolean, required: true },
-        certificateTemplate: {
-            type: {
-                templateName: { type: String, required: true },
-                courseName: { type: String, required: true },
-                courseDescription: { type: String, required: true },
-            },
-            // Template de certificado é obrigatório somente se certificates for true
-            required: function () {
-                return this.certificates === true;
-            },
-        },
-        contents: {
-            type: [
-                {
-                    title: { type: String, required: true },
-                },
-            ],
-            // Conteúdos são opcionais
-            required: false,
-        },
-        entryQrCode: {
-            type: String,
-            // entryQrCode é obrigatório apenas para eventos do tipo flash
-            required: function () {
-                return this.type === 'flash';
-            },
-        },
-        organizers: [
+const eventSchema = new Schema<IEvent>({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    categories: { type: [String], required: true },
+    date: { type: Date, required: true },
+    location: {
+        address: { type: String, required: true },
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        country: { type: String, required: true },
+        additionalInfo: { type: String, required: false },
+    },
+    capacity: {
+        max: { type: Number, required: true },
+        current: { type: Number, required: true },
+        total: { type: Number, required: true },
+    },
+    schedules: {
+        start: { type: Date, required: true },
+        end: { type: Date, required: true },
+    },
+    type: { type: String, enum: ['standart', 'class', 'flash'], required: true },
+    inscription: {
+        type: [
             {
-                userId: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
+                price: { type: Number, required: true },
+                type: { type: String, enum: ['full', 'half', 'free', 'promotional', 'vip', 'other'], required: true },
+                discount: { type: Number, required: true },
+            },
+        ],
+        required: function () {
+            return this.type !== 'flash';
+        },
+    },
+    certificates: { type: Boolean, required: true },
+    certificateTemplate: {
+        templateName: { type: String, required: true },
+        courseName: { type: String, required: true },
+        courseDescription: { type: String, required: true },
+    },
+    contents: {
+        type: [
+            {
+                title: { type: String, required: true },
+            },
+        ],
+        required: false,
+    },
+    entryQrCode: {
+        type: String,
+        required: function () {
+            return this.type === 'flash';
+        },
+    },
+    organizers: {
+        type: [
+            {
+                userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
                 nivel: { type: String, enum: ['admin', 'reception', 'speaker'], required: true },
             },
         ],
-    }
-);
+        required: false,
+    },
+    reviews: {
+        type: [
+            {
+                userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+                rating: { type: Number, required: true },
+                comment: { type: String, required: true },
+            },
+        ],
+        required: false,
+    },
+});
 
-// Middleware para inicializar valores padrão em eventos novos
+// Middleware to initialize default values for new events
 eventSchema.pre<IEvent>('save', function (next) {
     if (this.isNew) {
         this.capacity.current = 0;

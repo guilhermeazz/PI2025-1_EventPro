@@ -5,14 +5,20 @@ import {
   getUserById,
   updateUser,
   deleteUser,
+  getUserDetails
 } from '../controllers/UserController';
+import { authMiddleware } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
+
+// Rota de Post para criar um novo usuário
 
 /**
  * @swagger
  * /api/user:
  *   post:
+ *     tags:
+ *       - User
  *     summary: Cria um novo usuário
  *     description: Endpoint para criar um usuário no banco de dados.
  *     requestBody:
@@ -52,10 +58,31 @@ const router = Router();
  */
 router.post('/user', createUser);
 
+//Rotas de Get para listar todos os usuários e obter um usuário específico pelo ID
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     tags:
+ *       - User
+ *       - Auth
+ *     summary: Obtém os detalhes do usuário autenticado
+ *     description: Endpoint para obter os detalhes do usuário autenticado no sistema.
+ *     responses:
+ *       200:
+ *         description: Detalhes do usuário obtidos com sucesso.
+ *       401:
+ *         description: Usuário não autenticado.
+ */
+router.get('/me', authMiddleware, getUserDetails);
+
 /**
  * @swagger
  * /api/user:
  *   get:
+ *     tags:
+ *       - User
  *     summary: Lista todos os usuários
  *     description: Retorna uma lista de todos os usuários cadastrados.
  *     responses:
@@ -70,6 +97,8 @@ router.get('/user', getUsers);
  * @swagger
  * /api/user/{id}:
  *   get:
+ *     tags:
+ *       - User
  *     summary: Obtem um usuário pelo ID
  *     description: Retorna os dados de um usuário específico.
  *     parameters:
@@ -87,10 +116,14 @@ router.get('/user', getUsers);
  */
 router.get('/user/:id', getUserById);
 
+// Rota de Patch para atualizar um usuário pelo ID
+
 /**
  * @swagger
  * /api/user/{id}:
  *   put:
+ *     tags:
+ *       - User
  *     summary: Atualiza um usuário pelo ID
  *     description: Atualiza os dados de um usuário específico.
  *     parameters:
@@ -135,12 +168,16 @@ router.get('/user/:id', getUserById);
  *       404:
  *         description: Usuário não encontrado.
  */
-router.put('/user/:id', updateUser);
+router.patch('/user/:id', updateUser);
+
+// Rota de Delete para excluir um usuário pelo ID
 
 /**
  * @swagger
  * /api/user/{id}:
  *   delete:
+ *     tags:
+ *       - User
  *     summary: Exclui um usuário pelo ID
  *     description: Remove um usuário específico do banco de dados.
  *     parameters:
