@@ -7,7 +7,7 @@ import {
   deleteUser,
   getUserDetails
 } from '../controllers/UserController';
-import { authMiddleware } from '../middlewares/AuthMiddlewares';
+import { authMiddleware } from '../middlewares/auth/AuthMiddlewares';
 
 const router = Router();
 
