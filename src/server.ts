@@ -10,7 +10,7 @@ import organizerRoutes from './routes/organizerRoutes'; // Importa as rotas de o
 import faqRoutes from './routes/faqRoutes'; // Importa as rotas de FAQ
 import participationRoutes from './routes/participationRoutes'; // Importa o modelo de participação
 import inscriptionRoutes from './routes/inscriptionRoutes';
-
+import imageRoutes from './routes/imageRoutes'; // Importa as rotas de imagem
 
 dotenv.config(); 
 
@@ -62,6 +62,9 @@ const createServer = (): Application => {
 
   // Rota de inscrições
   app.use('/api/inscription', inscriptionRoutes);
+
+  // Rota de imagens
+  app.use('/api/images', imageRoutes); 
 
   return app;
 };
