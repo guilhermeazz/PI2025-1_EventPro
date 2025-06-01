@@ -36,7 +36,7 @@ const userSchema = new Schema<IUser>(
       minlength: 8,
       validate: {
         validator: function (value: string) {
-          return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value);
+          return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(value);
         },
         message: 'A senha deve conter ao menos 8 caracteres, incluindo letras e números.',
       },
