@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import UserModel from '../models/UserModel';
+import InscriptionModel from '../models/InscriptionsModels';
+import ParticipationModel from '../models/ParticipationsModels';
+
 
 // Criar novo usuário
 export const createUser = async (req: Request, res: Response): Promise<void> => {
@@ -30,11 +33,47 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
             res.status(404).json({ message: 'Usuário não encontrado' });
             return;
         }
-        res.status(200).json(user);
+
+        // Buscar inscriptions do usuário com forAnotherOne false
+        const inscriptions = await InscriptionModel.find({ 
+            userId: req.params.id, 
+            forAnotherOne: false 
+        });
+
+        // Buscar tickets do usuário com forAnotherOne true
+        const tickets = await InscriptionModel.find({ 
+            userId: req.params.id, 
+            forAnotherOne: true 
+        });
+
+        // Buscar participations do usuário
+        const participations = await ParticipationModel.find({ 
+            userId: req.params.id 
+        });
+
+        // Construir resposta
+        const userDetails = {
+            ...user.toObject(),
+            inscriptions: inscriptions.map(inscription => ({
+                eventId: inscription.eventId, // Mantém a referência do eventId
+                inscriptionId: inscription._id, // Usamos _id como inscriptionId
+            })),
+            tickets: tickets.map(ticket => ({
+                eventId: ticket.eventId, // Mantém a referência do eventId
+                inscriptionId: ticket._id, // Usamos _id como inscriptionId
+            })),
+            participations: participations.map(participation => ({
+                eventId: participation.eventId, // Mantém a referência do eventId
+                participationId: participation._id, // Usamos _id como participationId
+            }))
+        };
+
+        res.status(200).json(userDetails);
     } catch (error: any) {
         res.status(400).json({ message: 'Erro ao buscar usuário', error: error.message });
     }
-};
+}
+
 
 // Atualizar usuário por ID
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
@@ -77,3 +116,5 @@ export const getUserDetails = async (req: Request, res: Response): Promise<void>
         res.status(400).json({ message: 'Erro ao buscar detalhes do usuário', error: error.message });
     }
 }
+
+

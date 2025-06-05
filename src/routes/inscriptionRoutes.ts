@@ -5,6 +5,10 @@ import {
   getInscriptionsById,
   deleteInscription
 } from '../controllers/InscriptionsController';
+import { validateUserExists } from '../middlewares/user/validateUserExist';
+import { validateEventExists } from '../middlewares/event/validateEventExist';
+import { validateParticipantFields } from '../middlewares/event/validateParticipantsField';
+import { preventDuplicateInscription } from '../middlewares/event/preventDuplicateInscription';
 
 const router = Router();
 
@@ -17,23 +21,67 @@ const router = Router();
 
 /**
  * @swagger
- * /api/inscriptions:
+ * /api/inscription:
  *   post:
- *     summary: Create a new inscription
+ *     summary: Cria uma nova inscrição em um evento
  *     tags: [Inscriptions]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Inscription'
+ *             type: object
+ *             required:
+ *               - userId
+ *               - eventId
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: ID do usuário se inscrevendo
+ *               eventId:
+ *                 type: string
+ *                 description: ID do evento no qual a inscrição está sendo feita
+ *               forAnotherOne:
+ *                 type: boolean
+ *                 description: Indica se a inscrição é para outra pessoa
+ *               participants:
+ *                 type: object
+ *                 description: Dados do participante (necessário apenas se forAnotherOne for true)
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                     example: "João da Silva"
+ *                   email:
+ *                     type: string
+ *                     example: "joao@email.com"
+ *                   dateOfBirth:
+ *                     type: string
+ *                     format: date
+ *                     example: "1990-01-01"
+ *                   document:
+ *                     type: string
+ *                     example: "12345678900"
  *     responses:
  *       201:
- *         description: Inscription created successfully
+ *         description: "Inscrição criada com sucesso"
+ *       400:
+ *         description: "Requisição inválida (ex: campos obrigatórios ausentes)"
+ *       404:
+ *         description: "Usuário ou evento não encontrado"
+ *       409:
+ *         description: "Usuário já inscrito ou participante já inscrito"
  *       500:
- *         description: Error while creating inscription
+ *         description: "Erro interno ao tentar criar a inscrição"
  */
-router.post('/', createInscription);
+
+router.post(
+  "/",
+  validateUserExists,               // valida antes
+  validateEventExists,              // valida antes
+  validateParticipantFields,        // preenche ou valida os dados do participante
+  preventDuplicateInscription,      // impede duplicidade
+  createInscription                 // só executa se tudo acima passou
+);
 
 /**
  * @swagger
@@ -92,3 +140,11 @@ router.get('/:id', getInscriptionsById);
 router.delete('/:id', deleteInscription);
 
 export default router;
+
+
+
+
+
+
+
+

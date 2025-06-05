@@ -2,6 +2,7 @@ import mongoose, {Schema, model, Document } from "mongoose";
 
 export interface IParticipation extends Document {
     userId?: mongoose.Types.ObjectId;
+    eventId?: mongoose.Types.ObjectId;
     name: string;
     email: string;
     dateOfBirth: Date;

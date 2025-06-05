@@ -1,6 +1,6 @@
 import { CallbackWithoutResultAndOptionalError } from 'mongoose';
 import bcrypt from 'bcrypt';
-import { IUser } from '../models/UserModel';
+import { IUser } from '../../models/UserModel';
 
 export const hashPassword = async function (this: IUser, next: CallbackWithoutResultAndOptionalError) {
   if (!this.isModified('password')) return next();

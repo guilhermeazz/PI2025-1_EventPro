@@ -9,18 +9,7 @@ export interface IUser extends Document {
   cpf: string;
   phone: string;
   email: string;
-  eventsInscriptions: {
-    eventId: mongoose.Types.ObjectId;
-    inscriptionId: mongoose.Types.ObjectId;
-  }[];
-  eventsParticipations: {
-    eventId: mongoose.Types.ObjectId;
-    participationId: mongoose.Types.ObjectId;
-  }[];
-  tickets: {
-    eventId: mongoose.Types.ObjectId;
-    inscriptionId: mongoose.Types.ObjectId;
-  }[];
+
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -45,24 +34,7 @@ const userSchema = new Schema<IUser>(
     cpf: { type: String, required: true, unique: true },
     phone: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    eventsInscriptions: [
-      {
-        eventId: { type: mongoose.Types.ObjectId, ref: 'Event', required: true },
-        inscriptionId: { type: mongoose.Types.ObjectId, ref: 'Inscription', required: true },
-      },
-    ],
-    eventsParticipations: [
-      {
-        eventId: { type: mongoose.Types.ObjectId, ref: 'Event', required: true },
-        participationId: { type: mongoose.Types.ObjectId, ref: 'Participation', required: true },
-      },
-    ],
-    tickets: [
-      {
-        eventId: { type: mongoose.Types.ObjectId, ref: 'Event', required: true },
-        inscriptionId: { type: mongoose.Types.ObjectId, ref: 'Inscription', required: true },
-      },
-    ],
+
   },
   { timestamps: true }
 );

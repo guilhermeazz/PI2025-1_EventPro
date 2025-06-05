@@ -33,9 +33,7 @@ export const login =  async (req: Request, res: Response) : Promise<any> => {
                     email: user?.email,
                     name: user?.name,
                     lastname: user?.lastname,
-                    eventsInscriptions: user?.eventsInscriptions,
-                    eventsParticipations: user?.eventsParticipations,
-                    tickets: user?.tickets,
+
                     token : token,
                 },
             })
