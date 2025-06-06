@@ -71,12 +71,12 @@ export const cancelInscription = async (req: Request, res: Response) : Promise<v
             return;
         }
 
-        if (inscription.status === StatusEnumerator.CANCELED) {
-            res.status(400).json({ message: 'Esta inscrição já está cancelada.' });
+        if (inscription.status === StatusEnumerator.EXPIRADO) {
+            res.status(400).json({ message: 'Esta inscrição Expirada.' });
             return;
         }
 
-        inscription.status = StatusEnumerator.CANCELED;
+        inscription.status = StatusEnumerator.EXPIRADO;
         await inscription.save();
 
         res.status(200).json({ message: 'Inscrição cancelada com sucesso.', inscription });
