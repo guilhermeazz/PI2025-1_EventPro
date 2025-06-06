@@ -1,16 +1,26 @@
 import { Request, Response } from 'express';
 import ParticipationModel from '../models/ParticipationsModels';
+import { ParticipationStatusEnumerator } from '../Enum/ParticipationStatusEnumerator';
 
 //CRUD de participações
 
 //Criar nova participação
-
 export const createParticipation = async (req: Request, res: Response) : Promise<void> => {
     try {
-        const participation = new ParticipationModel(req.body); 
+        const { userId, eventId, name, email, dateOfBirth, document, avaliation } = req.body;
+        const participation = new ParticipationModel({
+            userId,
+            eventId,
+            name,
+            email,
+            dateOfBirth,
+            document,
+            avaliation,
+            status: ParticipationStatusEnumerator.PENDING
+        });
         await participation.save();
         res.status(201).json(participation);
-        
+
     } catch (error) {
         res.status(500).json({
             message: "Error while creating participation",
@@ -33,8 +43,7 @@ export const getParticipations = async (req: Request, res: Response) : Promise<v
 }
 
 //Obter participação por ID
-
-export const getParticipationsById = async (req: Request, res: Response): Promise<void> => { 
+export const getParticipationsById = async (req: Request, res: Response): Promise<void> => {
     try {
         const participation = await ParticipationModel.findById(req.params.id);
         if (!participation) {
@@ -50,11 +59,9 @@ export const getParticipationsById = async (req: Request, res: Response): Promis
 }
 
 //Atualizar participação por Id
-
 export const updateParticipation = async (req: Request, res: Response): Promise<void> => {
     try{
-        const participation = await ParticipationModel.findByIdAndUpdate(req.params
-            .id, req.body, { new: true });
+        const participation = await ParticipationModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!participation) {
             res.status(404).json({ message: 'Participation not found' });
         }
@@ -68,7 +75,6 @@ export const updateParticipation = async (req: Request, res: Response): Promise<
 }
 
 //Deletar participação por Id
-
 export const deleteParticipation = async (req: Request, res: Response) : Promise<void> => {
     try {
         const participation = await ParticipationModel.findByIdAndDelete(req.params.id);
@@ -83,3 +89,29 @@ export const deleteParticipation = async (req: Request, res: Response) : Promise
         })
     }
 }
+
+// Função para atualizar o status de participação (e.g., CHECKIN, CHECKOUT)
+export const updateParticipationStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params; // ID da participação
+        const { newStatus } = req.body; // Novo status desejado (ex: CHECKIN, CHECKOUT)
+
+        if (!Object.values(ParticipationStatusEnumerator).includes(newStatus)) {
+            res.status(400).json({ message: 'Status de participação inválido.' });
+            return;
+        }
+
+        const participation = await ParticipationModel.findById(id);
+        if (!participation) {
+            res.status(404).json({ message: 'Participação não encontrada.' });
+            return;
+        }
+
+        participation.status = newStatus;
+        await participation.save();
+
+        res.status(200).json({ message: `Status da participação atualizado para ${newStatus}.`, participation });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao atualizar status da participação', error });
+    }
+};

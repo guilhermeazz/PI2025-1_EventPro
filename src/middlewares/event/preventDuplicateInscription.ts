@@ -7,13 +7,11 @@ export const preventDuplicateInscription = async (
   next: NextFunction
 ): Promise<void> => {
   const { userId, eventId, forAnotherOne, participants } = req.body;
-
   if (forAnotherOne) {
     const exists = await InscriptionModel.findOne({
       eventId,
       "participants.document": participants.document
     });
-
     if (exists) {
       res.status(409).json({ message: "Essa pessoa já está inscrita neste evento." });
       return;
@@ -25,7 +23,6 @@ export const preventDuplicateInscription = async (
       userId,
       forAnotherOne: false
     });
-
     if (exists) {
       res.status(409).json({ message: "Você já está inscrito neste evento." });
       return;

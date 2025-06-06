@@ -1,14 +1,15 @@
 import { Router } from 'express';
 import upload from '../middlewares/upload';
 import { uploadImage } from '../controllers/imageController';
+import { authMiddleware } from '../middlewares/auth/AuthMiddlewares';
 
 const router = Router();
 
 /**
  * @swagger
  * tags:
- *   name: Images
- *   description: Endpoints para upload de imagens
+ *   - name: Images
+ *     description: Endpoints para upload de imagens
  */
 
 /**
@@ -17,6 +18,8 @@ const router = Router();
  *   post:
  *     summary: Faz upload de uma imagem para o Cloudinary e salva no banco de dados
  *     tags: [Images]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -58,9 +61,11 @@ const router = Router();
  *                       example: 2025-05-18T15:23:00.000Z
  *       400:
  *         description: Nenhuma imagem enviada
+ *       401:
+ *         description: Não autorizado (token ausente ou inválido).
  *       500:
  *         description: Erro ao enviar imagem
  */
-router.post('/upload', upload.single('image'), uploadImage);
+router.post('/upload', authMiddleware, upload.single('image'), uploadImage);
 
 export default router;

@@ -7,7 +7,6 @@ export const validateEventExists = async (
   next: NextFunction
 ): Promise<void> => {
   const { eventId } = req.body;
-
   if (!eventId) {
     res.status(400).json({ message: "O campo eventId é obrigatório." });
     return;

@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
-import FaqModel from "../models/faqModels";
+import FaqModel from "../models/faqModels"; //
 
 //CRUD de FAQ
 
 //Criar novo FAQ
-
 export const createFaq = async (req: Request, res: Response) : Promise<void> => {
-    try { 
+    try {
         const faq = new FaqModel(req.body);
         await faq.save();
         res.status(201).json(faq)
@@ -20,7 +19,7 @@ export const createFaq = async (req: Request, res: Response) : Promise<void> => 
 
 //Listar FAQ
 export const getFaqs = async (req: Request, res: Response) : Promise<void> => {
-    try { 
+    try {
         const faqs = await FaqModel.find();
         res.status(200).json(faqs);
     } catch (error) {
@@ -32,10 +31,9 @@ export const getFaqs = async (req: Request, res: Response) : Promise<void> => {
 }
 
 //Update FAQ por Id
-
 export const updateFaq = async (req: Request, res: Response): Promise<void> => {
     try {
-        const faq = await FaqModel.findByIdAndUpdate(req.params.id);
+        const faq = await FaqModel.findByIdAndUpdate(req.params.id, req.body, { new: true }); // Adicionado req.body para atualização
         if (!faq) {
             res.status(404).json({ message: 'FAQ not found' });
         }
@@ -61,6 +59,5 @@ export const deleteFaq = async (req: Request, res: Response): Promise<void> => {
             message: "Error while deleting FAQ",
             error
         })
-    }       
+    }
 }
-

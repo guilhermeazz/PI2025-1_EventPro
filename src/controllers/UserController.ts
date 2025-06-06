@@ -3,8 +3,7 @@ import UserModel from '../models/UserModel';
 import InscriptionModel from '../models/InscriptionsModels';
 import ParticipationModel from '../models/ParticipationsModels';
 
-
-// Criar novo usuário
+// Criar novo usuário [cite: 82]
 export const createUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const user = new UserModel(req.body);
@@ -15,7 +14,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
-// Listar todos os usuários
+// Listar todos os usuários [cite: 84]
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
     try {
         const users = await UserModel.find();
@@ -25,7 +24,7 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-// Obter usuário por ID
+// Obter usuário por ID [cite: 87]
 export const getUserById = async (req: Request, res: Response): Promise<void> => {
     try {
         const user = await UserModel.findById(req.params.id);
@@ -34,24 +33,21 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
             return;
         }
 
-        // Buscar inscriptions do usuário com forAnotherOne false
-        const inscriptions = await InscriptionModel.find({ 
-            userId: req.params.id, 
-            forAnotherOne: false 
+        // Buscar inscriptions do usuário com forAnotherOne false [cite: 89]
+        const inscriptions = await InscriptionModel.find({
+            userId: req.params.id,
+            forAnotherOne: false
         });
-
-        // Buscar tickets do usuário com forAnotherOne true
-        const tickets = await InscriptionModel.find({ 
-            userId: req.params.id, 
-            forAnotherOne: true 
+        // Buscar tickets do usuário com forAnotherOne true [cite: 90]
+        const tickets = await InscriptionModel.find({
+            userId: req.params.id,
+            forAnotherOne: true
         });
-
-        // Buscar participations do usuário
-        const participations = await ParticipationModel.find({ 
-            userId: req.params.id 
+        // Buscar participations do usuário [cite: 91]
+        const participations = await ParticipationModel.find({
+            userId: req.params.id
         });
-
-        // Construir resposta
+        // Construir resposta [cite: 91]
         const userDetails = {
             ...user.toObject(),
             inscriptions: inscriptions.map(inscription => ({
@@ -67,15 +63,13 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
                 participationId: participation._id, // Usamos _id como participationId
             }))
         };
-
         res.status(200).json(userDetails);
     } catch (error: any) {
         res.status(400).json({ message: 'Erro ao buscar usuário', error: error.message });
     }
 }
 
-
-// Atualizar usuário por ID
+// Atualizar usuário por ID [cite: 95]
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const user = await UserModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -89,7 +83,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
-// Deletar usuário por ID
+// Deletar usuário por ID [cite: 99]
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const user = await UserModel.findByIdAndDelete(req.params.id);
@@ -103,10 +97,10 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
-// Detalhes do usuário
+// Detalhes do usuário [cite: 103]
 export const getUserDetails = async (req: Request, res: Response): Promise<void> => {
     try {
-        const user = await UserModel.findById(req.user_id); // Supondo que o ID do usuário esteja no token JWT
+        const user = await UserModel.findById(req.user_id);
         if (!user) {
             res.status(404).json({ message: 'Usuário não encontrado' });
             return;
@@ -117,4 +111,41 @@ export const getUserDetails = async (req: Request, res: Response): Promise<void>
     }
 }
 
+// Função para trocar a senha
+export const changePassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+        const userId = req.user_id; // Supondo que o ID do usuário esteja no token JWT
 
+        if (!userId) {
+            res.status(401).json({ message: 'Não autorizado: ID do usuário não encontrado.' });
+            return;
+        }
+
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            res.status(404).json({ message: 'Usuário não encontrado.' });
+            return;
+        }
+
+        const isPasswordValid = await user.comparePassword(oldPassword);
+        if (!isPasswordValid) {
+            res.status(401).json({ message: 'Senha antiga inválida.' });
+            return;
+        }
+
+        // Validação da nova senha (reutilizando a validação do modelo UserModel)
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        if (!passwordRegex.test(newPassword)) {
+            res.status(400).json({ message: 'A nova senha não atende aos requisitos de segurança. A senha deve conter ao menos 8 caracteres, incluindo letras, números e caracteres especiais.' });
+            return;
+        }
+
+        user.password = newPassword; // O middleware pre('save') do UserModel fará o hash
+        await user.save();
+
+        res.status(200).json({ message: 'Senha alterada com sucesso.' });
+    } catch (error: any) {
+        res.status(400).json({ message: 'Erro ao alterar a senha', error: error.message });
+    }
+};

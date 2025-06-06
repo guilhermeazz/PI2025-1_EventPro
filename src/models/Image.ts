@@ -1,5 +1,4 @@
 import { Schema, model, Document } from 'mongoose';
-
 interface IImage extends Document {
   url: string;
   public_id: string;
@@ -11,5 +10,4 @@ const imageSchema = new Schema<IImage>({
   public_id: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });
-
 export default model<IImage>('Image', imageSchema);

@@ -9,7 +9,6 @@ export const uploadImage = async (req: Request, res: Response) : Promise<any> =>
 
     const filename = req.file.originalname.split('.')[0]; // nome do arquivo sem extensão
     const image = await uploadToCloudinary(req.file.buffer, filename);
-
     return res.status(201).json({
       message: 'Imagem enviada com sucesso!',
       data: image,

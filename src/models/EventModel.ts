@@ -1,7 +1,6 @@
 import mongoose, { Schema, model, Document } from 'mongoose';
-
 export interface IEvent extends Document {
-    userId: mongoose.Schema.Types.ObjectId; // Change this to `mongoose.Schema.Types.ObjectId`
+    userId: mongoose.Schema.Types.ObjectId; // Change this to `mongoose.Schema.Types.ObjectId` [cite: 152]
 
     name: string;
     description: string;
@@ -25,11 +24,11 @@ export interface IEvent extends Document {
         end: Date;
     };
 
-    type: string | 'standart' | 'class' | 'flash';
+    type: string | 'standart' | 'class' | 'flash'; // [cite: 156]
 
     inscription: {
         price: number;
-        type: string | 'full' | 'half' | 'free' | 'promotional' | 'vip' | 'other';
+        type: string | 'full' | 'half' | 'free' | 'promotional' | 'vip' | 'other'; // [cite: 157]
         discount: number;
     }[];
     certificates: boolean;
@@ -43,14 +42,13 @@ export interface IEvent extends Document {
     }[];
 
     entryQrCode: string;
-
     organizers: {
-        userId: mongoose.Schema.Types.ObjectId; // Change this to `mongoose.Schema.Types.ObjectId`
+        userId: mongoose.Schema.Types.ObjectId; // Change this to `mongoose.Schema.Types.ObjectId` [cite: 161]
         nivel: string | 'admin' | 'reception' | 'speaker';
     }[];
 
     reviews: {
-        userId: mongoose.Schema.Types.ObjectId; // Change this to `mongoose.Schema.Types.ObjectId`
+        userId: mongoose.Schema.Types.ObjectId; // Change this to `mongoose.Schema.Types.ObjectId` [cite: 163]
         rating: number;
         comment: string;
     }[];
@@ -87,7 +85,7 @@ const eventSchema = new Schema<IEvent>({
                 discount: { type: Number, required: true },
             },
         ],
-        required: function () {
+        required: function (this: any) { // Usar 'this' para acessar 'type'
             return this.type !== 'flash';
         },
     },
@@ -107,7 +105,7 @@ const eventSchema = new Schema<IEvent>({
     },
     entryQrCode: {
         type: String,
-        required: function () {
+        required: function (this: any) { // Usar 'this' para acessar 'type'
             return this.type === 'flash';
         },
     },
@@ -131,8 +129,7 @@ const eventSchema = new Schema<IEvent>({
         required: false,
     },
 });
-
-// Middleware to initialize default values for new events
+// Middleware to initialize default values for new events [cite: 173]
 eventSchema.pre<IEvent>('save', function (next) {
     if (this.isNew) {
         this.capacity.current = 0;
@@ -140,6 +137,5 @@ eventSchema.pre<IEvent>('save', function (next) {
     }
     next();
 });
-
 const EventModel = model<IEvent>('Event', eventSchema);
 export default EventModel;

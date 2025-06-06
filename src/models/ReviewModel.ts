@@ -2,10 +2,10 @@ import mongoose, { Schema, Document, model } from 'mongoose';
 
 export interface IReview extends Document {
   userId: mongoose.Types.ObjectId;
-  rating: number;       // Por exemplo, de 0 a 5
-  comment?: string;     // Comentário opcional
-  reviewableId: mongoose.Types.ObjectId; // ID da entidade avaliada
-  reviewableType: 'Event' | 'Inscription'; // Define o tipo da entidade
+  rating: number; // Por exemplo, de 0 a 5 [cite: 195]
+  comment?: string;     // Comentário opcional [cite: 195]
+  reviewableId: mongoose.Types.ObjectId; // ID da entidade avaliada [cite: 196]
+  reviewableType: 'Event' | 'Inscription'; // Define o tipo da entidade [cite: 197]
 }
 
 const reviewSchema = new Schema<IReview>(
@@ -18,5 +18,4 @@ const reviewSchema = new Schema<IReview>(
   },
   { timestamps: true }
 );
-
 export default model<IReview>('Review', reviewSchema);

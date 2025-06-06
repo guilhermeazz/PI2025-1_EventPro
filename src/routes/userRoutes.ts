@@ -5,134 +5,202 @@ import {
   getUserById,
   updateUser,
   deleteUser,
-  getUserDetails
+  getUserDetails,
+  changePassword,
 } from '../controllers/UserController';
+
 import { authMiddleware } from '../middlewares/auth/AuthMiddlewares';
 
 const router = Router();
-
-// Rota de Post para criar um novo usuário
 
 /**
  * @swagger
  * /api/user:
  *   post:
- *     tags:
- *       - User
- *     summary: Cria um novo usuário
- *     description: Endpoint para criar um usuário no banco de dados.
+ *     tags: [Register]
+ *     summary: Cria um novo usuário (completo)
+ *     description: Endpoint para criar um usuário completo no banco de dados. Este endpoint NÃO exige verificação de e-mail.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
+ *               - lastname
+ *               - password
+ *               - dateOfBirth
+ *               - cpf
+ *               - phone
+ *               - email
  *             properties:
  *               name:
  *                 type: string
  *                 description: Nome do usuário.
+ *                 example: John
  *               lastname:
  *                 type: string
  *                 description: Sobrenome do usuário.
+ *                 example: Doe
  *               password:
  *                 type: string
- *                 description: Senha do usuário.
+ *                 description: Senha do usuário. Deve conter ao menos 8 caracteres, incluindo letras, números e caracteres especiais.
+ *                 example: minhaSenhaForte!123
  *               dateOfBirth:
  *                 type: string
  *                 format: date
- *                 description: Data de nascimento do usuário.
+ *                 description: Data de nascimento do usuário (YYYY-MM-DD).
+ *                 example: 1990-01-01
  *               cpf:
  *                 type: string
- *                 description: CPF do usuário.
+ *                 description: CPF do usuário (único).
+ *                 example: 123.456.789-00
  *               phone:
  *                 type: string
  *                 description: Número de telefone do usuário.
+ *                 example: "+5511987654321"
  *               email:
  *                 type: string
- *                 description: Email do usuário.
+ *                 description: Email do usuário (único).
+ *                 example: newuser@example.com
  *     responses:
  *       201:
  *         description: Usuário criado com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "60c8e23f1f7d5c001f3e0123"
+ *                 name:
+ *                   type: string
+ *                   example: "John"
+ *                 email:
+ *                   type: string
+ *                   example: "newuser@example.com"
+ *                 # outros campos do usuário podem ser retornados aqui
  *       400:
- *         description: Dados inválidos fornecidos.
+ *         description: "Dados inválidos fornecidos (ex: senha fraca, campos faltando)."
+ *       409:
+ *         description: "E-mail ou CPF já cadastrado."
+ *       500:
+ *         description: "Erro interno ao criar usuário."
  */
 router.post('/user', createUser);
 
-//Rotas de Get para listar todos os usuários e obter um usuário específico pelo ID
+// Aplica o middleware de autenticação para as demais rotas
+router.use('/user', authMiddleware);
+
+/**
+ * @swagger
+ * /api/user/change-password:
+ *   patch:
+ *     tags: [User, Auth]
+ *     summary: Altera a senha do usuário autenticado
+ *     description: 'Endpoint para alterar a senha do usuário, exigindo a senha antiga e a nova.'
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ChangePassword'
+ *     responses:
+ *       200:
+ *         description: 'Senha alterada com sucesso.'
+ *       400:
+ *         description: 'Requisição inválida (ex: nova senha não atende aos requisitos).'
+ *       401:
+ *         description: 'Não autorizado (token inválido ou senha antiga incorreta).'
+ *       404:
+ *         description: 'Usuário não encontrado.'
+ *       500:
+ *         description: 'Erro interno ao alterar a senha.'
+ */
+router.patch('/change-password', changePassword);
 
 /**
  * @swagger
  * /api/auth/me:
  *   get:
- *     tags:
- *       - User
- *       - Auth
+ *     tags: [User, Auth]
  *     summary: Obtém os detalhes do usuário autenticado
- *     description: Endpoint para obter os detalhes do usuário autenticado no sistema.
+ *     description: 'Endpoint para obter os detalhes do usuário autenticado no sistema.'
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Detalhes do usuário obtidos com sucesso.
+ *         description: 'Detalhes do usuário obtidos com sucesso.'
  *       401:
- *         description: Usuário não autenticado.
+ *         description: 'Usuário não autenticado.'
  */
-router.get('/me', authMiddleware, getUserDetails);
+router.get('/me', getUserDetails);
 
 /**
  * @swagger
  * /api/user:
  *   get:
- *     tags:
- *       - User
+ *     tags: [User]
  *     summary: Lista todos os usuários
- *     description: Retorna uma lista de todos os usuários cadastrados.
+ *     description: 'Retorna uma lista de todos os usuários cadastrados.'
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Lista de usuários retornada com sucesso.
+ *         description: 'Lista de usuários retornada com sucesso.'
  *       404:
- *         description: Nenhum usuário encontrado.
+ *         description: 'Nenhum usuário encontrado.'
+ *       401:
+ *         description: 'Não autorizado (token ausente ou inválido).'
  */
-router.get('/user', getUsers);
+router.get('/', getUsers);
 
 /**
  * @swagger
  * /api/user/{id}:
  *   get:
- *     tags:
- *       - User
+ *     tags: [User]
  *     summary: Obtem um usuário pelo ID
- *     description: Retorna os dados de um usuário específico.
+ *     description: 'Retorna os dados de um usuário específico.'
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: id
- *         in: path
+ *       - in: path
+ *         name: id
  *         required: true
- *         description: ID do usuário.
  *         schema:
  *           type: string
+ *         description: 'ID do usuário.'
  *     responses:
  *       200:
- *         description: Usuário encontrado com sucesso.
+ *         description: 'Usuário encontrado com sucesso.'
  *       404:
- *         description: Usuário não encontrado.
+ *         description: 'Usuário não encontrado.'
+ *       401:
+ *         description: 'Não autorizado (token ausente ou inválido).'
  */
-router.get('/user/:id', getUserById);
-
-// Rota de Patch para atualizar um usuário pelo ID
+router.get('/:id', getUserById);
 
 /**
  * @swagger
  * /api/user/{id}:
- *   put:
- *     tags:
- *       - User
+ *   patch:
+ *     tags: [User]
  *     summary: Atualiza um usuário pelo ID
- *     description: Atualiza os dados de um usuário específico.
+ *     description: 'Atualiza os dados de um usuário específico.'
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: id
- *         in: path
+ *       - in: path
+ *         name: id
  *         required: true
- *         description: ID do usuário.
  *         schema:
  *           type: string
+ *         description: ID do usuário.
  *     requestBody:
  *       required: true
  *       content:
@@ -142,57 +210,57 @@ router.get('/user/:id', getUserById);
  *             properties:
  *               name:
  *                 type: string
- *                 description: Nome do usuário.
+ *                 description: 'Nome do usuário.'
  *               lastname:
  *                 type: string
- *                 description: Sobrenome do usuário.
- *               password:
- *                 type: string
- *                 description: Senha do usuário.
+ *                 description: 'Sobrenome do usuário.'
  *               dateOfBirth:
  *                 type: string
  *                 format: date
- *                 description: Data de nascimento do usuário.
+ *                 description: 'Data de nascimento do usuário.'
  *               cpf:
  *                 type: string
- *                 description: CPF do usuário.
+ *                 description: 'CPF do usuário.'
  *               phone:
  *                 type: string
- *                 description: Número de telefone do usuário.
+ *                 description: 'Número de telefone do usuário.'
  *               email:
  *                 type: string
- *                 description: Email do usuário.
+ *                 description: 'Email do usuário.'
  *     responses:
  *       200:
- *         description: Usuário atualizado com sucesso.
+ *         description: 'Usuário atualizado com sucesso.'
  *       404:
- *         description: Usuário não encontrado.
+ *         description: 'Usuário não encontrado.'
+ *       401:
+ *         description: 'Não autorizado (token ausente ou inválido).'
  */
-router.patch('/user/:id', updateUser);
-
-// Rota de Delete para excluir um usuário pelo ID
+router.patch('/:id', updateUser);
 
 /**
  * @swagger
  * /api/user/{id}:
  *   delete:
- *     tags:
- *       - User
+ *     tags: [User]
  *     summary: Exclui um usuário pelo ID
- *     description: Remove um usuário específico do banco de dados.
+ *     description: 'Remove um usuário específico do banco de dados.'
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: id
- *         in: path
+ *       - in: path
+ *         name: id
  *         required: true
- *         description: ID do usuário.
  *         schema:
  *           type: string
+ *         description: 'ID do usuário.'
  *     responses:
  *       200:
- *         description: Usuário excluído com sucesso.
+ *         description: 'Usuário excluído com sucesso.'
  *       404:
- *         description: Usuário não encontrado.
+ *         description: 'Usuário não encontrado.'
+ *       401:
+ *         description: 'Não autorizado (token ausente ou inválido).'
  */
-router.delete('/user/:id', deleteUser);
+router.delete('/:id', deleteUser);
 
 export default router;

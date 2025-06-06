@@ -1,5 +1,7 @@
+// src/index.ts
 import dotenv from 'dotenv';
-import createServer from './server';
+// Correção: Importar como named export, já que server.ts faz 'export const createServer'
+import { createServer } from './server';
 
 dotenv.config();
 

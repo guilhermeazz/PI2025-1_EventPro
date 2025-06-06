@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import InscriptionModel from "../models/InscriptionsModels";
+import { StatusEnumerator } from "../Enum/StatusEnumerator";
+import { ParticipationStatusEnumerator } from "../Enum/ParticipationStatusEnumerator"; // Certifique-se de importar
 
 //CRUD (sem update) de inscrições
 //Criar nova inscrição
@@ -58,3 +60,30 @@ export const deleteInscription = async (req: Request, res: Response) : Promise<v
     }
 }
 
+// Função para cancelar inscrição
+export const cancelInscription = async (req: Request, res: Response) : Promise<void> => {
+    try {
+        const { id } = req.params; // ID da inscrição
+
+        const inscription = await InscriptionModel.findById(id);
+        if (!inscription) {
+            res.status(404).json({ message: 'Inscrição não encontrada.' });
+            return;
+        }
+
+        if (inscription.status === StatusEnumerator.CANCELED) {
+            res.status(400).json({ message: 'Esta inscrição já está cancelada.' });
+            return;
+        }
+
+        inscription.status = StatusEnumerator.CANCELED;
+        await inscription.save();
+
+        res.status(200).json({ message: 'Inscrição cancelada com sucesso.', inscription });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error while canceling inscription",
+            error
+        })
+    }
+}
