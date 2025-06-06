@@ -16,7 +16,7 @@ export const createParticipation = async (req: Request, res: Response) : Promise
             dateOfBirth,
             document,
             avaliation,
-            status: ParticipationStatusEnumerator.PENDING
+            status: ParticipationStatusEnumerator.APROVADO
         });
         await participation.save();
         res.status(201).json(participation);
