@@ -263,9 +263,10 @@ router.delete('/:id', deleteEvent);
  *   post:
  *     tags: [Access Control]
  *     summary: Valida a entrada em um evento (check-in)
- *     description: Realiza o check-in do usuário no evento, com base no ID do ingresso (QR Code).
- *     Para eventos 'Standard' ou 'Class', o `{id}` na URL é o ID da Inscrição.
- *     Para eventos 'Flash', o `{id}` na URL é o ID do Evento, e o `userId` deve ser enviado no corpo.
+ *     description: |
+ *       Realiza o check-in do usuário no evento, com base no ID do ingresso (QR Code).
+ *       Para eventos 'Standard' ou 'Class', o `{id}` na URL é o ID da Inscrição.
+ *       Para eventos 'Flash', o `{id}` na URL é o ID do Evento, e o `userId` deve ser enviado no corpo.
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -300,9 +301,10 @@ router.post('/validate-entry/:id', validateEntry);
  *   post:
  *     tags: [Access Control]
  *     summary: Valida a saída de um evento (check-out)
- *     description: Registra a saída do usuário de um evento, com base no ID do ingresso (QR Code).
- *     Para eventos 'Standard' ou 'Class', o `{id}` na URL é o ID da Inscrição.
- *     Para eventos 'Flash', o `{id}` na URL é o ID do Evento, e o `userId` deve ser enviado no corpo.
+ *     description: |
+ *       Registra a saída do usuário de um evento, com base no ID do ingresso (QR Code).
+ *       Para eventos 'Standard' ou 'Class', o `{id}` na URL é o ID da Inscrição.
+ *       Para eventos 'Flash', o `{id}` na URL é o ID do Evento, e o `userId` deve ser enviado no corpo.
  *     security:
  *       - bearerAuth: []
  *     parameters:
