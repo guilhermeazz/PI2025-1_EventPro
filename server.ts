@@ -2,18 +2,18 @@
 import express, { Application } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
-import connectDB from './db/moongose';
+import connectDB from './src/db/moongose';
 import dotenv from 'dotenv';
 import path from 'path';
 
-import userRoutes from './routes/userRoutes';
-import authRoutes from './routes/authRoutes';
-import eventRoutes from './routes/eventRoutes';
-import organizerRoutes from './routes/organizerRoutes';
-import faqRoutes from './routes/faqRoutes';
-import participationRoutes from './routes/participationRoutes';
-import inscriptionRoutes from './routes/inscriptionRoutes';
-import imageRoutes from './routes/imageRoutes';
+import userRoutes from './src/routes/userRoutes';
+import authRoutes from './src/routes/authRoutes';
+import eventRoutes from './src/routes/eventRoutes';
+import organizerRoutes from './src/routes/organizerRoutes';
+import faqRoutes from './src/routes/faqRoutes';
+import participationRoutes from './src/routes/participationRoutes';
+import inscriptionRoutes from './src/routes/inscriptionRoutes';
+import imageRoutes from './src/routes/imageRoutes';
 
 dotenv.config();
 connectDB();
