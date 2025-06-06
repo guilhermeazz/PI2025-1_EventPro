@@ -148,9 +148,8 @@ export const updateOrganizer = async (req: Request, res: Response) : Promise<any
 
 // ✅ Função para validar entrada (Check-in)
 export const validateEntry = async (req: Request, res: Response): Promise<void> => {
-    const { eventId, inscriptionId } = req.body; // Recebe o ID do evento (para flash) ou o ID da inscrição (para standard/class)
-    // O ID do ingresso (qrcode_id) será o inscriptionId ou o eventId (para flash)
-    const qrcode_id = req.params.id; // Assume que o ID lido do QR Code vem do parâmetro da URL
+    const { eventId, inscriptionId } = req.body; // eventId e inscriptionId são do corpo da requisição, não usados no params.id
+    const qrcode_id = req.params.id; // O ID lido do QR Code vem do parâmetro da URL
 
     try {
         // Tenta encontrar a inscrição primeiro, que se aplica a Standard e Class
@@ -164,24 +163,28 @@ export const validateEntry = async (req: Request, res: Response): Promise<void> 
                 return;
             }
 
-            if (inscription.status === StatusEnumerator.APROVADO) { // Verifica se está aprovado (equivalente ao CONFIRMED)
-                if (inscription.participation_status === ParticipationStatusEnumerator.PARTICIPANDO) {
-                    res.status(400).json({ valid: false, message: 'Este ingresso já foi usado para entrada (status PARTICIPANDO).' });
-                    return;
-                }
-                if (inscription.participation_status === ParticipationStatusEnumerator.PARTICIPADO) {
-                    res.status(400).json({ valid: false, message: 'Este ingresso já foi usado para entrada e saída (status PARTICIPADO).' });
-                    return;
-                }
-                if (inscription.status === StatusEnumerator.USADO) { // Se já estiver como usado no status principal
-                    res.status(400).json({ valid: false, message: 'Este ingresso já foi usado para entrada.' });
-                    return;
-                }
-                if (inscription.status === StatusEnumerator.EXPIRADO) {
-                    res.status(400).json({ valid: false, message: 'Este ingresso está expirado e não pode ser usado para entrada.' });
-                    return;
-                }
+            // ✅ Lógica Corrigida: Verificar status sequencialmente
+            if (inscription.status === StatusEnumerator.USADO) {
+                res.status(400).json({ valid: false, message: 'Este ingresso já foi usado para entrada.' });
+                return;
+            }
+            if (inscription.status === StatusEnumerator.EXPIRADO) {
+                res.status(400).json({ valid: false, message: 'Este ingresso está expirado e não pode ser usado para entrada.' });
+                return;
+            }
+            // Se o ingresso já está em status de participação avançado mas o status do ingresso não é USADO,
+            // pode ser uma inconsistência ou um fluxo particular.
+            if (inscription.participation_status === ParticipationStatusEnumerator.PARTICIPANDO) {
+                res.status(400).json({ valid: false, message: 'Este ingresso já foi usado para entrada (status PARTICIPANDO).' });
+                return;
+            }
+            if (inscription.participation_status === ParticipationStatusEnumerator.PARTICIPADO) {
+                res.status(400).json({ valid: false, message: 'Este ingresso já foi usado para entrada e saída (status PARTICIPADO).' });
+                return;
+            }
 
+            // Se chegou até aqui, significa que o ingresso está APROVADO e não foi usado
+            if (inscription.status === StatusEnumerator.APROVADO) {
                 // Valida a entrada
                 inscription.status = StatusEnumerator.USADO; // Muda o status do ingresso para USADO
                 inscription.participation_status = ParticipationStatusEnumerator.PARTICIPANDO; // Muda o status de participação para PARTICIPANDO
@@ -190,14 +193,13 @@ export const validateEntry = async (req: Request, res: Response): Promise<void> 
                 await inscription.save();
                 res.status(200).json({ valid: true, message: 'Entrada validada com sucesso!', inscription });
                 return;
-
             } else {
+                // Captura qualquer outro status inesperado que não seja APROVADO
                 res.status(400).json({ valid: false, message: `Status do ingresso inválido para entrada: ${inscription.status}.` });
                 return;
             }
 
         } else { // Lógica para eventos Flash (sem inscrição formal, usa ParticipationModel diretamente)
-            // Se não encontrou uma Inscrição com esse ID, tenta encontrar um Evento para o caso Flash
             const event = await EventModel.findById(qrcode_id);
 
             if (!event) {
@@ -210,8 +212,6 @@ export const validateEntry = async (req: Request, res: Response): Promise<void> 
                 return;
             }
 
-            // Para evento Flash, o QR Code é o ID do evento, e a validação cria/atualiza uma Participação
-            // Assumimos que o `userId` (da pessoa fazendo check-in no evento Flash) é passado no corpo da requisição.
             const { userId } = req.body;
             if (!userId) {
                 res.status(400).json({ valid: false, message: 'ID do usuário é obrigatório para eventos Flash.' });
@@ -221,7 +221,6 @@ export const validateEntry = async (req: Request, res: Response): Promise<void> 
             let participation = await ParticipationModel.findOne({ userId, eventId: event._id });
 
             if (!participation) {
-                // Se não há participação, cria uma nova e marca como PARTICIPANDO
                 const user = await UserModel.findById(userId);
                 if (!user) {
                     res.status(404).json({ valid: false, message: 'Usuário não encontrado para criar participação.' });
@@ -234,7 +233,7 @@ export const validateEntry = async (req: Request, res: Response): Promise<void> 
                     email: user.email,
                     dateOfBirth: user.dateOfBirth,
                     document: user.cpf,
-                    status: ParticipationStatusEnumerator.PARTICIPANDO, // ✅ Status inicial PARTICIPANDO
+                    status: ParticipationStatusEnumerator.PARTICIPANDO,
                     checkin: { in: new Date() }
                 });
                 await participation.save();
@@ -242,7 +241,6 @@ export const validateEntry = async (req: Request, res: Response): Promise<void> 
                 return;
             }
 
-            // Se a participação já existe, atualiza o status se necessário
             if (participation.status === ParticipationStatusEnumerator.PARTICIPANDO) {
                 res.status(400).json({ valid: false, message: 'Você já está PARTICIPANDO deste evento Flash.' });
                 return;
@@ -252,12 +250,12 @@ export const validateEntry = async (req: Request, res: Response): Promise<void> 
                 return;
             }
             if (participation.status === ParticipationStatusEnumerator.NAO_COMPARECEU) {
-                // Pode-se reverter o status aqui ou exigir que o usuário re-registre.
-                // Por agora, vamos permitir a entrada, mudando de NAO_COMPARECEU para PARTICIPANDO.
-                // Ou você pode adicionar uma lógica para não permitir se o status for NAO_COMPARECEU e o evento já começou.
+                 // Pode-se permitir a entrada mesmo que tenha NAO_COMPARECEU, dependendo da regra de negócio.
+                 // Se não permitir, basta adicionar 'res.status(400).json({valid: false, message: 'Seu status é NAO_COMPARECEU'}); return;'
+                 // Se permitir, ele continuará e o status será atualizado.
             }
 
-            participation.status = ParticipationStatusEnumerator.PARTICIPANDO; // ✅ Muda o status para PARTICIPANDO
+            participation.status = ParticipationStatusEnumerator.PARTICIPANDO;
             participation.checkin = { in: new Date() };
             await participation.save();
             res.status(200).json({ valid: true, message: 'Entrada registrada com sucesso no evento Flash!', participation });
