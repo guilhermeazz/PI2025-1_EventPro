@@ -15,8 +15,8 @@ export interface IInscription extends Document {
     status: StatusEnumerator;
     participation_status: ParticipationStatusEnumerator;
     checkin: {
-        in?: Date; // Modificado para opcional
-        out?: Date; // Modificado para opcional
+        in?: Date;
+        out?: Date;
     },
     certificate: {
         document: string;
@@ -39,11 +39,11 @@ const inscriptionSchema = new Schema<IInscription>(
             dateOfBirth: { type: Date, required: true },
             document: { type: String, required: true },
         },
-        status: { type: String, enum: Object.values(StatusEnumerator), default: StatusEnumerator.PENDING },
-        participation_status: { type: String, enum: Object.values(ParticipationStatusEnumerator), default: ParticipationStatusEnumerator.PENDING },
+        status: { type: String, enum: Object.values(StatusEnumerator), default: StatusEnumerator.APROVADO }, // ✅ Default para APROVADO
+        participation_status: { type: String, enum: Object.values(ParticipationStatusEnumerator), default: ParticipationStatusEnumerator.APROVADO }, // ✅ Default para APROVADO
         checkin:{
-            in:{type:Date}, // Alterado para Date
-            out:{type:Date} // Alterado para Date
+            in:{type:Date},
+            out:{type:Date}
         },
         certificate:{
             document:{type:String},

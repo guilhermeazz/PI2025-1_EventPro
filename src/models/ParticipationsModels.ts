@@ -2,14 +2,14 @@ import mongoose, {Schema, model, Document } from "mongoose";
 import { ParticipationStatusEnumerator } from "../Enum/ParticipationStatusEnumerator";
 
 export interface IParticipation extends Document {
-    userId: mongoose.Types.ObjectId; // Tornar obrigatório
-    eventId: mongoose.Types.ObjectId; // Tornar obrigatório
+    userId: mongoose.Types.ObjectId;
+    eventId: mongoose.Types.ObjectId;
     name: string;
     email: string;
     dateOfBirth: Date;
     document: string;
-    status: ParticipationStatusEnumerator; // Adicionar status
-    checkin?: { // Adicionado
+    status: ParticipationStatusEnumerator;
+    checkin?: {
         in?: Date;
         out?: Date;
     };
@@ -26,8 +26,8 @@ const participtionSchema = new Schema<IParticipation>({
     email: { type: String, required: true},
     dateOfBirth: { type: Date, required: true},
     document: { type: String, required: true},
-    status: { type: String, enum: Object.values(ParticipationStatusEnumerator), default: ParticipationStatusEnumerator.PENDING },
-    checkin: { // Adicionado
+    status: { type: String, enum: Object.values(ParticipationStatusEnumerator), default: ParticipationStatusEnumerator.APROVADO }, // ✅ Default para APROVADO
+    checkin: {
         in: { type: Date },
         out: { type: Date }
     },

@@ -1,5 +1,5 @@
 export enum StatusEnumerator {
-    CONFIRMED = 'CONFIRMED',
-    PENDING = 'PENDING',
-    CANCELED = 'CANCELED',
+    APROVADO = 'APROVADO', 
+    USADO = 'USADO', 
+    EXPIRADO = 'EXPIRADO', 
 }
