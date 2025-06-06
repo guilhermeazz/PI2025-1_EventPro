@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/guilhermeazz/PI_EventPro_2025-1#readme",
   "dependencies": {
-    "@types/nodemailer": "^6.4.17",
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.6.1",
     "dotenv": "^16.5.0",

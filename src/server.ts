@@ -154,7 +154,7 @@ const swaggerOptions = {
     },
   },
   // ✅ Agora corretamente fora do 'definition':
-  apis: [path.join(__dirname, 'routes', '*.ts')],
+  apis: [path.join(process.cwd(), 'src', 'routes', '*.ts')],
 };
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
