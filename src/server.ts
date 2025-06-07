@@ -31,7 +31,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'https://pi2025-1eventpro-production.up.railway.app',
         description: 'Development Server',
       },
     ],
