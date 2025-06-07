@@ -30,9 +30,6 @@ const router = Router();
  */
 router.get('/', getFaqs); // ✅ Esta rota é pública, então fica ANTES do middleware.
 
-// Aplica o middleware para as rotas que exigem autenticação
-router.use('/', authMiddleware); // ✅ Middleware aplicado AQUI
-
 /**
  * @swagger
  * /api/faq:
@@ -55,7 +52,7 @@ router.use('/', authMiddleware); // ✅ Middleware aplicado AQUI
  *       500:
  *         description: 'Error while creating FAQ'
  */
-router.post('/', createFaq); // ✅ Protegida pelo router.use acima
+router.post('/', authMiddleware,  createFaq); // ✅ Protegida pelo router.use acima
 
 /**
  * @swagger
@@ -88,7 +85,7 @@ router.post('/', createFaq); // ✅ Protegida pelo router.use acima
  *       500:
  *         description: 'Error while updating FAQ'
  */
-router.patch('/:id', updateFaq); // ✅ Protegida pelo router.use acima
+router.patch('/:id', authMiddleware, updateFaq); // ✅ Protegida pelo router.use acima
 
 /**
  * @swagger
@@ -115,6 +112,6 @@ router.patch('/:id', updateFaq); // ✅ Protegida pelo router.use acima
  *       500:
  *         description: 'Error while deleting FAQ'
  */
-router.delete('/:id', deleteFaq); // ✅ Protegida pelo router.use acima
+router.delete('/:id', authMiddleware, deleteFaq); // ✅ Protegida pelo router.use acima
 
 export default router;
