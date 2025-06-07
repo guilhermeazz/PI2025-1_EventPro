@@ -5,6 +5,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import connectDB from './db/moongose';
 import dotenv from 'dotenv';
 import path from 'path';
+import cors from 'cors';
 
 import userRoutes from './routes/userRoutes';
 import authRoutes from './routes/authRoutes';
@@ -161,6 +162,8 @@ const swaggerDocs = swaggerJSDoc(swaggerOptions);
 
 export const createServer = (): Application => {
   const app = express();
+
+  app.use(cors());
 
   app.use(express.json());
 
