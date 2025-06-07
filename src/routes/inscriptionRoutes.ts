@@ -15,9 +15,6 @@ import { authMiddleware } from '../middlewares/auth/AuthMiddlewares';
 
 const router = Router();
 
-// ✅ Aplica o middleware para todas as rotas de inscrição neste roteador
-router.use('/', authMiddleware);
-
 /**
  * @swagger
  * tags:
@@ -88,6 +85,7 @@ router.use('/', authMiddleware);
  */
 router.post(
   '/',
+  authMiddleware,
   validateUserExists,
   validateEventExists,
   validateParticipantFields,
@@ -111,7 +109,7 @@ router.post(
  *       500:
  *         description: 'Error while fetching inscriptions'
  */
-router.get('/', getInscriptions);
+router.get('/',authMiddleware, getInscriptions);
 
 /**
  * @swagger
@@ -136,7 +134,7 @@ router.get('/', getInscriptions);
  *       500:
  *         description: 'Error while fetching inscription'
  */
-router.get('/:id', getInscriptionsById);
+router.get('/:id',authMiddleware, getInscriptionsById);
 
 /**
  * @swagger
@@ -161,7 +159,7 @@ router.get('/:id', getInscriptionsById);
  *       500:
  *         description: 'Error while deleting inscription'
  */
-router.delete('/:id', deleteInscription);
+router.delete('/:id',authMiddleware, deleteInscription);
 
 /**
  * @swagger
@@ -190,6 +188,6 @@ router.delete('/:id', deleteInscription);
  *       500:
  *         description: 'Erro interno ao cancelar a inscrição'
  */
-router.patch('/:id/cancel', cancelInscription);
+router.patch('/:id/cancel',authMiddleware, cancelInscription);
 
 export default router;
