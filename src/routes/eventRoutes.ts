@@ -196,7 +196,7 @@ const router = Router();
  *       500:
  *         description: 'Erro ao criar evento.'
  */
-router.post('/',authMiddleware, createEvent);
+router.post('/', createEvent);
 
 /**
  * @swagger
@@ -215,7 +215,7 @@ router.post('/',authMiddleware, createEvent);
  *       500:
  *         description: 'Erro ao obter eventos.'
  */
-router.get('/',authMiddleware, getEvents);
+router.get('/', getEvents);
 
 /**
  * @swagger
@@ -243,7 +243,7 @@ router.get('/',authMiddleware, getEvents);
  *       500:
  *         description: 'Erro ao obter evento.'
  */
-router.get('/:id',authMiddleware, getEventById);
+router.get('/:id', getEventById);
 
 /**
  * @swagger
@@ -280,7 +280,7 @@ router.get('/:id',authMiddleware, getEventById);
  *       500:
  *         description: 'Erro ao atualizar evento.'
  */
-router.patch('/:id',authMiddleware, updateEvent);
+router.patch('/:id', updateEvent);
 
 /**
  * @swagger
@@ -308,7 +308,7 @@ router.patch('/:id',authMiddleware, updateEvent);
  *       500:
  *         description: 'Erro ao deletar evento.'
  */
-router.delete('/:id',authMiddleware, deleteEvent);
+router.delete('/:id', deleteEvent);
 
 /**
  * @swagger
@@ -352,7 +352,7 @@ router.delete('/:id',authMiddleware, deleteEvent);
  *       500:
  *         description: 'Erro interno ao validar entrada.'
  */
-router.post('/validate-entry/:id', authMiddleware, validateEntry);
+router.post('/validate-entry/:id', validateEntry);
 
 /**
  * @swagger
@@ -396,6 +396,6 @@ router.post('/validate-entry/:id', authMiddleware, validateEntry);
  *       500:
  *         description: 'Erro interno ao validar saída.'
  */
-router.post('/validate-exit/:id', authMiddleware, validateExit);
+router.post('/validate-exit/:id', validateExit);
 
 export default router;
