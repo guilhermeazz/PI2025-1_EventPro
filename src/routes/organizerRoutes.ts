@@ -1,4 +1,3 @@
-// src/routes/organizerRoutes.ts
 import { Router } from 'express';
 import {
   addOrganizer,
@@ -10,7 +9,7 @@ import { authMiddleware } from '../middlewares/auth/AuthMiddlewares';
 
 const router = Router();
 
-// Aplica o middleware de autenticação para todas as rotas de organizador
+// ✅ Aplica o middleware de autenticação para todas as rotas de organizador neste roteador
 router.use('/', authMiddleware);
 
 /**
@@ -26,7 +25,7 @@ router.use('/', authMiddleware);
  *   get:
  *     tags: [Event Organizers]
  *     summary: Lista organizadores de um evento
- *     description: Retorna a lista de organizadores de um evento específico.
+ *     description: 'Retorna a lista de organizadores de um evento específico.'
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -35,16 +34,16 @@ router.use('/', authMiddleware);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do evento
+ *         description: 'ID do evento'
  *     responses:
  *       200:
- *         description: Lista de organizadores retornada com sucesso.
+ *         description: 'Lista de organizadores retornada com sucesso.'
  *       401:
- *         description: Não autorizado (token ausente ou inválido).
+ *         description: 'Não autorizado (token ausente ou inválido).'
  *       404:
- *         description: Evento não encontrado.
+ *         description: 'Evento não encontrado.'
  *       500:
- *         description: Erro ao obter organizadores do evento.
+ *         description: 'Erro ao obter organizadores do evento.'
  */
 router.get('/event/:id', getOrganizers);
 
@@ -54,7 +53,7 @@ router.get('/event/:id', getOrganizers);
  *   post:
  *     tags: [Event Organizers]
  *     summary: Adiciona um organizador ao evento
- *     description: Adiciona um novo organizador ao evento especificado.
+ *     description: 'Adiciona um novo organizador ao evento especificado.'
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -63,7 +62,7 @@ router.get('/event/:id', getOrganizers);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do evento
+ *         description: 'ID do evento'
  *     requestBody:
  *       required: true
  *       content:
@@ -76,22 +75,22 @@ router.get('/event/:id', getOrganizers);
  *             properties:
  *               userId:
  *                 type: string
- *                 description: ID do usuário a ser adicionado como organizador.
+ *                 description: 'ID do usuário a ser adicionado como organizador.'
  *                 example: "60c8e23f1f7d5c001f3e0123"
  *               nivel:
  *                 type: string
  *                 enum: [admin, reception, speaker]
- *                 description: Nível de acesso do organizador.
+ *                 description: 'Nível de acesso do organizador.'
  *                 example: "reception"
  *     responses:
  *       200:
- *         description: Organizador adicionado com sucesso.
+ *         description: 'Organizador adicionado com sucesso.'
  *       401:
- *         description: Não autorizado (token ausente ou inválido).
+ *         description: 'Não autorizado (token ausente ou inválido).'
  *       404:
- *         description: Evento não encontrado.
+ *         description: 'Evento não encontrado.'
  *       500:
- *         description: Erro ao adicionar organizador.
+ *         description: 'Erro ao adicionar organizador.'
  */
 router.post('/event/:id', addOrganizer);
 
@@ -101,7 +100,7 @@ router.post('/event/:id', addOrganizer);
  *   patch:
  *     tags: [Event Organizers]
  *     summary: Atualiza o nível de um organizador
- *     description: Atualiza o nível de acesso de um organizador específico em um evento.
+ *     description: 'Atualiza o nível de acesso de um organizador específico em um evento.'
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -110,13 +109,13 @@ router.post('/event/:id', addOrganizer);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do evento
+ *         description: 'ID do evento'
  *       - in: path
  *         name: userId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do organizador
+ *         description: 'ID do organizador'
  *     requestBody:
  *       required: true
  *       content:
@@ -129,17 +128,17 @@ router.post('/event/:id', addOrganizer);
  *               nivel:
  *                 type: string
  *                 enum: [admin, reception, speaker]
- *                 description: O novo nível de acesso para o organizador.
+ *                 description: 'O novo nível de acesso para o organizador.'
  *                 example: "speaker"
  *     responses:
  *       200:
- *         description: Nível do organizador atualizado com sucesso.
+ *         description: 'Nível do organizador atualizado com sucesso.'
  *       401:
- *         description: Não autorizado (token ausente ou inválido).
+ *         description: 'Não autorizado (token ausente ou inválido).'
  *       404:
- *         description: Evento ou organizador não encontrado.
+ *         description: 'Evento ou organizador não encontrado.'
  *       500:
- *         description: Erro ao atualizar organizador de evento.
+ *         description: 'Erro ao atualizar organizador de evento.'
  */
 router.patch('/event/:id/:userId', updateOrganizer);
 
@@ -149,7 +148,7 @@ router.patch('/event/:id/:userId', updateOrganizer);
  *   delete:
  *     tags: [Event Organizers]
  *     summary: Remove um organizador do evento
- *     description: Remove um organizador específico do evento.
+ *     description: 'Remove um organizador específico do evento.'
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -158,22 +157,22 @@ router.patch('/event/:id/:userId', updateOrganizer);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do evento
+ *         description: 'ID do evento'
  *       - in: path
  *         name: userId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do organizador a ser removido
+ *         description: 'ID do organizador a ser removido'
  *     responses:
  *       200:
- *         description: Organizador removido com sucesso.
+ *         description: 'Organizador removido com sucesso.'
  *       401:
- *         description: Não autorizado (token ausente ou inválido).
+ *         description: 'Não autorizado (token ausente ou inválido).'
  *       404:
- *         description: Evento ou organizador não encontrado.
+ *         description: 'Evento ou organizador não encontrado.'
  *       500:
- *         description: Erro ao remover organizador.
+ *         description: 'Erro ao remover organizador.'
  */
 router.delete('/event/:id/:userId', removeOrganizer);
 

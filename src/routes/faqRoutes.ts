@@ -19,6 +19,23 @@ const router = Router();
 /**
  * @swagger
  * /api/faq:
+ *   get:
+ *     summary: Get all FAQs
+ *     tags: [FAQs]
+ *     responses:
+ *       200:
+ *         description: 'List of FAQs'
+ *       404:
+ *         description: 'Error while fetching FAQs'
+ */
+router.get('/', getFaqs); // ✅ Esta rota é pública, então fica ANTES do middleware.
+
+// Aplica o middleware para as rotas que exigem autenticação
+router.use('/', authMiddleware); // ✅ Middleware aplicado AQUI
+
+/**
+ * @swagger
+ * /api/faq:
  *   post:
  *     summary: Create a new FAQ
  *     tags: [FAQs]
@@ -32,27 +49,13 @@ const router = Router();
  *             $ref: '#/components/schemas/FAQ'
  *     responses:
  *       201:
- *         description: FAQ created successfully
+ *         description: 'FAQ created successfully'
  *       401:
- *         description: Não autorizado (token ausente ou inválido).
+ *         description: 'Não autorizado (token ausente ou inválido).'
  *       500:
- *         description: Error while creating FAQ
+ *         description: 'Error while creating FAQ'
  */
-router.post('/', authMiddleware, createFaq);
-
-/**
- * @swagger
- * /api/faq:
- *   get:
- *     summary: Get all FAQs
- *     tags: [FAQs]
- *     responses:
- *       200:
- *         description: List of FAQs
- *       404:
- *         description: Error while fetching FAQs
- */
-router.get('/', getFaqs);
+router.post('/', createFaq); // ✅ Protegida pelo router.use acima
 
 /**
  * @swagger
@@ -66,7 +69,7 @@ router.get('/', getFaqs);
  *       - in: path
  *         name: id
  *         required: true
- *         description: FAQ ID
+ *         description: 'FAQ ID'
  *         schema:
  *           type: string
  *     requestBody:
@@ -77,15 +80,15 @@ router.get('/', getFaqs);
  *             $ref: '#/components/schemas/FAQ'
  *     responses:
  *       200:
- *         description: FAQ updated successfully
+ *         description: 'FAQ updated successfully'
  *       401:
- *         description: Não autorizado (token ausente ou inválido).
+ *         description: 'Não autorizado (token ausente ou inválido).'
  *       404:
- *         description: FAQ not found
+ *         description: 'FAQ not found'
  *       500:
- *         description: Error while updating FAQ
+ *         description: 'Error while updating FAQ'
  */
-router.patch('/:id', authMiddleware, updateFaq);
+router.patch('/:id', updateFaq); // ✅ Protegida pelo router.use acima
 
 /**
  * @swagger
@@ -99,19 +102,19 @@ router.patch('/:id', authMiddleware, updateFaq);
  *       - in: path
  *         name: id
  *         required: true
- *         description: FAQ ID
+ *         description: 'FAQ ID'
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: FAQ deleted successfully
+ *         description: 'FAQ deleted successfully'
  *       401:
- *         description: Não autorizado (token ausente ou inválido).
+ *         description: 'Não autorizado (token ausente ou inválido).'
  *       404:
- *         description: FAQ not found
+ *         description: 'FAQ not found'
  *       500:
- *         description: Error while deleting FAQ
+ *         description: 'Error while deleting FAQ'
  */
-router.delete('/:id', authMiddleware, deleteFaq);
+router.delete('/:id', deleteFaq); // ✅ Protegida pelo router.use acima
 
 export default router;

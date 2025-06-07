@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import {
-  createUser,
-  getUsers,
-  getUserById,
-  updateUser,
-  deleteUser,
-  getUserDetails,
-  changePassword,
+  createUser,         // Rota /api/user           POST
+  getUsers,           // Rota /api/user           GET (todos)
+  getUserById,        // Rota /api/user/{id}      GET
+  updateUser,         // Rota /api/user/{id}      PATCH
+  deleteUser,         // Rota /api/user/{id}      DELETE
+  getUserDetails,     // Rota /api/user/me        GET
+  changePassword,     // Rota /api/user/change-password PATCH
 } from '../controllers/UserController';
 
 import { authMiddleware } from '../middlewares/auth/AuthMiddlewares';
@@ -19,7 +19,7 @@ const router = Router();
  *   post:
  *     tags: [Register]
  *     summary: Cria um novo usuário (completo)
- *     description: Endpoint para criar um usuário completo no banco de dados. Este endpoint NÃO exige verificação de e-mail.
+ *     description: 'Endpoint para criar um usuário completo no banco de dados. Este endpoint NÃO exige verificação de e-mail.'
  *     requestBody:
  *       required: true
  *       content:
@@ -37,36 +37,36 @@ const router = Router();
  *             properties:
  *               name:
  *                 type: string
- *                 description: Nome do usuário.
+ *                 description: 'Nome do usuário.'
  *                 example: John
  *               lastname:
  *                 type: string
- *                 description: Sobrenome do usuário.
+ *                 description: 'Sobrenome do usuário.'
  *                 example: Doe
  *               password:
  *                 type: string
- *                 description: Senha do usuário. Deve conter ao menos 8 caracteres, incluindo letras, números e caracteres especiais.
+ *                 description: 'Senha do usuário. Deve conter ao menos 8 caracteres, incluindo letras, números e caracteres especiais.'
  *                 example: minhaSenhaForte!123
  *               dateOfBirth:
  *                 type: string
  *                 format: date
- *                 description: Data de nascimento do usuário (YYYY-MM-DD).
+ *                 description: 'Data de nascimento do usuário (YYYY-MM-DD).'
  *                 example: 1990-01-01
  *               cpf:
  *                 type: string
- *                 description: CPF do usuário (único).
+ *                 description: 'CPF do usuário (único).'
  *                 example: 123.456.789-00
  *               phone:
  *                 type: string
- *                 description: Número de telefone do usuário.
+ *                 description: 'Número de telefone do usuário.'
  *                 example: "+5511987654321"
  *               email:
  *                 type: string
- *                 description: Email do usuário (único).
+ *                 description: 'Email do usuário (único).'
  *                 example: newuser@example.com
  *     responses:
  *       201:
- *         description: Usuário criado com sucesso.
+ *         description: 'Usuário criado com sucesso.'
  *         content:
  *           application/json:
  *             schema:
@@ -81,18 +81,34 @@ const router = Router();
  *                 email:
  *                   type: string
  *                   example: "newuser@example.com"
- *                 # outros campos do usuário podem ser retornados aqui
  *       400:
- *         description: "Dados inválidos fornecidos (ex: senha fraca, campos faltando)."
+ *         description: 'Dados inválidos fornecidos (ex: senha fraca, campos faltando).'
  *       409:
- *         description: "E-mail ou CPF já cadastrado."
+ *         description: 'E-mail ou CPF já cadastrado.'
  *       500:
- *         description: "Erro interno ao criar usuário."
+ *         description: 'Erro interno ao criar usuário.'
  */
 router.post('/user', createUser);
 
 // Aplica o middleware de autenticação para as demais rotas
 router.use('/user', authMiddleware);
+
+/**
+ * @swagger
+ * /api/user/me:
+ *   get:
+ *     tags: [User, Auth]
+ *     summary: Obtém os detalhes do usuário autenticado
+ *     description: 'Endpoint para obter os detalhes do usuário autenticado no sistema.'
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 'Detalhes do usuário obtidos com sucesso.'
+ *       401:
+ *         description: 'Usuário não autenticado.'
+ */
+router.get('/me', getUserDetails);
 
 /**
  * @swagger
@@ -122,23 +138,6 @@ router.use('/user', authMiddleware);
  *         description: 'Erro interno ao alterar a senha.'
  */
 router.patch('/change-password', changePassword);
-
-/**
- * @swagger
- * /api/auth/me:
- *   get:
- *     tags: [User, Auth]
- *     summary: Obtém os detalhes do usuário autenticado
- *     description: 'Endpoint para obter os detalhes do usuário autenticado no sistema.'
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: 'Detalhes do usuário obtidos com sucesso.'
- *       401:
- *         description: 'Usuário não autenticado.'
- */
-router.get('/me', getUserDetails);
 
 /**
  * @swagger
@@ -200,7 +199,7 @@ router.get('/:id', getUserById);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do usuário.
+ *         description: 'ID do usuário.'
  *     requestBody:
  *       required: true
  *       content:

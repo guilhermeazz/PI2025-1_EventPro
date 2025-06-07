@@ -15,7 +15,7 @@ import { authMiddleware } from '../middlewares/auth/AuthMiddlewares';
 
 const router = Router();
 
-// Aplica o middleware para todas as rotas de inscrição
+// ✅ Aplica o middleware para todas as rotas de inscrição neste roteador
 router.use('/', authMiddleware);
 
 /**
@@ -45,19 +45,19 @@ router.use('/', authMiddleware);
  *             properties:
  *               userId:
  *                 type: string
- *                 description: ID do usuário se inscrevendo
+ *                 description: 'ID do usuário se inscrevendo'
  *                 example: "60c8e23f1f7d5c001f3e0123"
  *               eventId:
  *                 type: string
- *                 description: ID do evento no qual a inscrição está sendo feita
+ *                 description: 'ID do evento no qual a inscrição está sendo feita'
  *                 example: "60d0fe4f5b67d5001f3e0921"
  *               forAnotherOne:
  *                 type: boolean
- *                 description: Indica se a inscrição é para outra pessoa
+ *                 description: 'Indica se a inscrição é para outra pessoa'
  *                 example: false
  *               participants:
  *                 type: object
- *                 description: Dados do participante (necessário apenas se forAnotherOne for true)
+ *                 description: 'Dados do participante (necessário apenas se forAnotherOne for true)'
  *                 properties:
  *                   name:
  *                     type: string
@@ -74,17 +74,17 @@ router.use('/', authMiddleware);
  *                     example: "12345678900"
  *     responses:
  *       201:
- *         description: "Inscrição criada com sucesso"
+ *         description: 'Inscrição criada com sucesso'
  *       400:
- *         description: "Requisição inválida (ex: campos obrigatórios ausentes)"
+ *         description: 'Requisição inválida (ex: campos obrigatórios ausentes)'
  *       401:
- *         description: "Não autorizado (token ausente ou inválido)"
+ *         description: 'Não autorizado (token ausente ou inválido)'
  *       404:
- *         description: "Usuário ou evento não encontrado"
+ *         description: 'Usuário ou evento não encontrado'
  *       409:
- *         description: "Usuário já inscrito ou participante já inscrito"
+ *         description: 'Usuário já inscrito ou participante já inscrito'
  *       500:
- *         description: "Erro interno ao tentar criar a inscrição"
+ *         description: 'Erro interno ao tentar criar a inscrição'
  */
 router.post(
   '/',
@@ -105,11 +105,11 @@ router.post(
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: "List of inscriptions"
+ *         description: 'List of inscriptions'
  *       401:
- *         description: "Não autorizado (token ausente ou inválido)"
+ *         description: 'Não autorizado (token ausente ou inválido)'
  *       500:
- *         description: "Error while fetching inscriptions"
+ *         description: 'Error while fetching inscriptions'
  */
 router.get('/', getInscriptions);
 
@@ -125,16 +125,16 @@ router.get('/', getInscriptions);
  *       - in: path
  *         name: id
  *         required: true
- *         description: Inscription ID
+ *         description: 'Inscription ID'
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: "Inscription found"
+ *         description: 'Inscription found'
  *       401:
- *         description: "Não autorizado (token ausente ou inválido)"
+ *         description: 'Não autorizado (token ausente ou inválido)'
  *       500:
- *         description: "Error while fetching inscription"
+ *         description: 'Error while fetching inscription'
  */
 router.get('/:id', getInscriptionsById);
 
@@ -150,16 +150,16 @@ router.get('/:id', getInscriptionsById);
  *       - in: path
  *         name: id
  *         required: true
- *         description: Inscription ID
+ *         description: 'Inscription ID'
  *         schema:
  *           type: string
  *     responses:
  *       204:
- *         description: "Inscription deleted successfully"
+ *         description: 'Inscription deleted successfully'
  *       401:
- *         description: "Não autorizado (token ausente ou inválido)"
+ *         description: 'Não autorizado (token ausente ou inválido)'
  *       500:
- *         description: "Error while deleting inscription"
+ *         description: 'Error while deleting inscription'
  */
 router.delete('/:id', deleteInscription);
 
@@ -175,20 +175,20 @@ router.delete('/:id', deleteInscription);
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID da inscrição a ser cancelada
+ *         description: 'ID da inscrição a ser cancelada'
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: "Inscrição cancelada com sucesso"
+ *         description: 'Inscrição cancelada com sucesso'
  *       400:
- *         description: "Esta inscrição já está cancelada"
+ *         description: 'Esta inscrição já está cancelada'
  *       401:
- *         description: "Não autorizado (token ausente ou inválido)"
+ *         description: 'Não autorizado (token ausente ou inválido)'
  *       404:
- *         description: "Inscrição não encontrada"
+ *         description: 'Inscrição não encontrada'
  *       500:
- *         description: "Erro interno ao cancelar a inscrição"
+ *         description: 'Erro interno ao cancelar a inscrição'
  */
 router.patch('/:id/cancel', cancelInscription);
 

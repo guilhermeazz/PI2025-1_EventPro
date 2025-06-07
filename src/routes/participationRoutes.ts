@@ -12,7 +12,7 @@ import { authMiddleware } from '../middlewares/auth/AuthMiddlewares';
 
 const router = Router();
 
-// Aplica o middleware para todas as rotas de participação
+// ✅ Aplica o middleware para todas as rotas de participação neste roteador
 router.use('/', authMiddleware);
 
 /**
@@ -47,11 +47,11 @@ router.use('/', authMiddleware);
  *             properties:
  *               userId:
  *                 type: string
- *                 description: ID do usuário participando.
+ *                 description: 'ID do usuário participando.'
  *                 example: "60c8e23f1f7d5c001f3e0123"
  *               eventId:
  *                 type: string
- *                 description: ID do evento.
+ *                 description: 'ID do evento.'
  *                 example: "60d0fe4f5b67d5001f3e0921"
  *               name:
  *                 type: string
@@ -77,11 +77,11 @@ router.use('/', authMiddleware);
  *                     example: "Excelente evento"
  *     responses:
  *       201:
- *         description: Participation created successfully
+ *         description: 'Participation created successfully'
  *       401:
- *         description: Não autorizado (token ausente ou inválido)
+ *         description: 'Não autorizado (token ausente ou inválido)'
  *       500:
- *         description: Error while creating participation
+ *         description: 'Error while creating participation'
  */
 router.post('/', createParticipation);
 
@@ -95,11 +95,11 @@ router.post('/', createParticipation);
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of all participations
+ *         description: 'List of participations'
  *       401:
- *         description: Não autorizado (token ausente ou inválido)
+ *         description: 'Não autorizado (token ausente ou inválido)'
  *       404:
- *         description: Error while fetching participations
+ *         description: 'Error while fetching participations'
  */
 router.get('/', getParticipations);
 
@@ -115,16 +115,16 @@ router.get('/', getParticipations);
  *       - in: path
  *         name: id
  *         required: true
- *         description: Participation ID
+ *         description: 'Participation ID'
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Participation found
+ *         description: 'Participation found'
  *       401:
- *         description: Não autorizado (token ausente ou inválido)
+ *         description: 'Não autorizado (token ausente ou inválido)'
  *       404:
- *         description: Participation not found
+ *         description: 'Participation not found'
  */
 router.get('/:id', getParticipationsById);
 
@@ -140,7 +140,7 @@ router.get('/:id', getParticipationsById);
  *       - in: path
  *         name: id
  *         required: true
- *         description: Participation ID
+ *         description: 'Participation ID'
  *         schema:
  *           type: string
  *     requestBody:
@@ -180,11 +180,11 @@ router.get('/:id', getParticipationsById);
  *                     example: "Boa experiência"
  *     responses:
  *       200:
- *         description: Participation updated
+ *         description: 'Participation updated'
  *       401:
- *         description: Não autorizado (token ausente ou inválido)
+ *         description: 'Não autorizado (token ausente ou inválido)'
  *       404:
- *         description: Participation not found
+ *         description: 'Participation not found'
  */
 router.patch('/:id', updateParticipation);
 
@@ -200,16 +200,16 @@ router.patch('/:id', updateParticipation);
  *       - in: path
  *         name: id
  *         required: true
- *         description: Participation ID
+ *         description: 'Participation ID'
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Participation deleted successfully
+ *         description: 'Participation deleted successfully'
  *       401:
- *         description: Não autorizado (token ausente ou inválido)
+ *         description: 'Não autorizado (token ausente ou inválido)'
  *       404:
- *         description: Participation not found
+ *         description: 'Participation not found'
  */
 router.delete('/:id', deleteParticipation);
 
@@ -225,7 +225,7 @@ router.delete('/:id', deleteParticipation);
  *       - in: path
  *         name: id
  *         required: true
- *         description: Participation ID
+ *         description: 'Participation ID'
  *         schema:
  *           type: string
  *     requestBody:
@@ -236,15 +236,15 @@ router.delete('/:id', deleteParticipation);
  *             $ref: '#/components/schemas/UpdateParticipationStatus'
  *     responses:
  *       200:
- *         description: Status da participação atualizado com sucesso
+ *         description: 'Status da participação atualizado com sucesso'
  *       400:
- *         description: Status de participação inválido
+ *         description: 'Status de participação inválido'
  *       401:
- *         description: Não autorizado (token ausente ou inválido)
+ *         description: 'Não autorizado (token ausente ou inválido)'
  *       404:
- *         description: Participação não encontrada
+ *         description: 'Participação não encontrada'
  *       500:
- *         description: Erro interno ao atualizar status da participação
+ *         description: 'Erro interno ao atualizar status da participação'
  */
 router.patch('/:id/status', updateParticipationStatus);
 

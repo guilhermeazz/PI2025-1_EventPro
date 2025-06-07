@@ -66,6 +66,6 @@ const router = Router();
  *       500:
  *         description: Erro ao enviar imagem
  */
-router.post('/upload', authMiddleware, upload.single('image'), uploadImage);
+router.post('/upload', upload.single('image'), uploadImage);
 
 export default router;
